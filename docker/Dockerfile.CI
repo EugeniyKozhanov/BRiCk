@@ -1,0 +1,76 @@
+FROM ubuntu:22.04
+
+ARG LLVM_VERSION=18
+
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+ENV PATH="/usr/lib/llvm-${LLVM_VERSION}/bin:${PATH}"
+
+WORKDIR /BRiCk
+COPY . .
+
+RUN apt-get update \
+    && apt-get install -y \
+        sudo \
+        gnupg \
+        locales \
+        wget \
+        nano \
+        fonts-powerline \
+        lsb-release \
+        software-properties-common \
+    && apt clean \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* 
+
+RUN locale-gen en_US.UTF-8 
+ 
+RUN apt update \
+    && apt install -y \
+        build-essential \
+        cmake \
+        curl \
+        cutils \
+        git \
+        make \
+        pkg-config \
+        python3 \
+        python3-pip \
+        neovim \
+        bc \
+        cpio \
+        rsync \
+    && apt clean \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* 
+
+RUN update-alternatives --install /usr/bin/python python /usr/bin/python3 1
+RUN update-alternatives --set python /usr/bin/python3 
+
+RUN cd /opt && wget https://apt.llvm.org/llvm.sh
+RUN chmod +x /opt/llvm.sh \
+    && /opt/llvm.sh $LLVM_VERSION all \
+    && rm /opt/llvm.sh
+
+# TODO: fix clang deps from opam conf-clang package
+RUN apt update \
+    && apt install -y \
+        opam \
+        libgmp-dev \
+        clang \
+    && apt clean \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* 
+
+RUN opam init --disable-sandboxing --yes && eval $(opam env)
+
+RUN export "PATH=/usr/lib/llvm-${LLVM_VERSION}/bin:$PATH" \
+    && opam repo add --dont-select coq-released "https://coq.inria.fr/opam/released" \
+    && opam repo add --dont-select iris-dev "git+https://gitlab.mpi-sws.org/iris/opam.git" \
+    && opam switch create --empty --repositories=iris-dev,default,coq-released BRiCk \
+    && eval $(opam env) \
+    && opam update \
+    && opam install --yes \
+        dune \
+    && eval $(opam env) 
+
+
+CMD ["/bin/bash"]
