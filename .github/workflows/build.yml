@@ -33,3 +33,25 @@ jobs:
             && cd /BRiCk/rocq-bluerock-cpp2v \
             && dune build \
             && dune runtest "
+
+      - name: Test build rocq BRiCk
+        run: |
+          docker run --rm brick:latest bash -c "eval \$(opam env) \
+            && opam pin add --yes -n rocq-lens.dev /BRiCk/rocq-lens/ \
+            && opam pin add --yes -n rocq-lens-elpi.dev /BRiCk/rocq-lens/ \
+            && opam pin add --yes -n elpi-extra.dev /BRiCk/elpi-extra/ \
+            && opam pin add --yes -n rocq-bluerock-prelude.dev /BRiCk/rocq-bluerock-prelude/ \
+            && opam pin add --yes -n rocq-bluerock-iris.dev /BRiCk/rocq-bluerock-iris \
+            && opam pin add --yes -n rocq-bluerock-rocq-internals.dev /BRiCk/rocq-bluerock-rocq-internals \
+            && opam pin add --yes -n rocq-bluerock-cpp2v.dev /BRiCk/rocq-bluerock-cpp2v \
+            && opam pin add --yes -n rocq-upoly.dev /BRiCk/rocq-upoly \
+            && opam pin add --yes -n ltac2-extra.dev /BRiCk/ltac2-extra/ \
+            && opam pin add --yes -n ltac2-llm.dev /BRiCk/ltac2-llm \
+            && opam pin add --yes -n stdlib-extra.dev /BRiCk/ocaml-stdlib-extra/ \
+            && opam pin add --yes -n rocq-extra.dev /BRiCk/ocaml-rocq-extra/ \
+            && opam update \
+            && opam install --yes --deps-only /BRiCk/rocq-bluerock-brick \
+            && eval \$(opam env) \
+            && cd /BRiCk/rocq-bluerock-brick \
+            && dune build \
+            && dune runtest "
