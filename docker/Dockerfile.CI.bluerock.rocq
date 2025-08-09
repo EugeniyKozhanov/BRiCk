@@ -96,6 +96,9 @@ RUN cd /opt \
     && opam pin add --yes -n coq coq \ 
     && opam pin add --yes -n coq-core coq \ 
     && opam pin add --yes -n coqide-server coq \ 
+    && git clone https://github.com/bluerock-io/iris.git -b br-master \
+    && opam pin add --yes -n coq-iris iris \
+    && opam pin add --yes -n coq-iris-heap-lang iris \
     && opam update \
     && eval $(opam env) \
     && opam install --yes --deps-only coq 
