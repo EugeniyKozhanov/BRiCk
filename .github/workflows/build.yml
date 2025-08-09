@@ -19,7 +19,7 @@ jobs:
         uses: docker/setup-buildx-action@v3
 
       - name: Build Docker image
-        run: docker build . -f docker/Dockerfile.CI -t brick:latest
+        run: docker build . -f docker/Dockerfile.CI.bluerock.rocq -t brick:latest
 
       - name: Test build cpp2v
         run: |
